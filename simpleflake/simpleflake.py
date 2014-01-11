@@ -1,6 +1,12 @@
-import time
-import random
+#!/usr/bin/env python
+# encoding: utf-8
+
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+
 import collections
+import random
+import time
 
 #: Epoch for simpleflake timestamps, starts at the year 2000
 SIMPLEFLAKE_EPOCH = 946702800
@@ -39,7 +45,8 @@ def extract_bits(data, shift, length):
 # ==================================================
 
 
-def simpleflake(timestamp=None, random_bits=None, epoch=SIMPLEFLAKE_EPOCH):
+def simpleflake(timestamp=None, random_bits=None, epoch=SIMPLEFLAKE_EPOCH,
+                hexa=False):
     """Generate a 64 bit, roughly-ordered, globally-unique ID."""
     second_time = timestamp if timestamp is not None else time.time()
     second_time -= epoch
@@ -49,6 +56,9 @@ def simpleflake(timestamp=None, random_bits=None, epoch=SIMPLEFLAKE_EPOCH):
     randomness = random_bits if random_bits is not None else randomness
 
     flake = (millisecond_time << SIMPLEFLAKE_TIMESTAMP_SHIFT) + randomness
+
+    if hexa:
+        flake = hex(flake).lstrip("0x").rstrip("L")
 
     return flake
 
@@ -63,3 +73,9 @@ def parse_simpleflake(flake):
                           SIMPLEFLAKE_RANDOM_SHIFT,
                           SIMPLEFLAKE_RANDOM_LENGTH)
     return simpleflake_struct(timestamp, random)
+
+
+# ==================================================
+
+if __name__ == "__main__":
+    print(simpleflake(hexa=True))
